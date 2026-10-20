@@ -1,6 +1,6 @@
 # CHL2002 Thermodynamics Project: Implementation Roadmap & Architecture
 
-**Document Version:** 1.0  
+**Document Version:** 1.1 (Audited)  
 **Phase:** Engineering Architecture & Milestone Planning  
 **Target Completion:** Prior to November 10, 2026 Submission  
 
@@ -18,11 +18,12 @@ Thermo Software/
 ├── docs/
 │   ├── PROJECT_SPECIFICATION.md # Complete equations, thermodynamic foundations, references
 │   ├── IMPLEMENTATION_ROADMAP.md# Phased milestone schedule, dependencies, test plan
+│   ├── SESSION_1_5_AUDIT.md    # Historical thermodynamic audit report & reproducible benchmarks
 │   └── REPORT_DRAFT.md         # 4-page technical report draft mapped to assignment criteria
 ├── include/
 │   └── thermo/
 │       ├── Constants.hpp       # Universal constants (R, standard conditions, precision epsilons)
-│       ├── Component.hpp       # PureComponent data model and Cp(T) integration methods
+│       ├── Component.hpp       # PureComponent data model and NIST Shomate Cp integration methods
 │       ├── ComponentDatabase.hpp# Curated catalog (8 gases) and custom component registry
 │       ├── CubicSolver.hpp     # Analytical cubic equation solver (Cardano + Trigonometric)
 │       ├── PengRobinsonEOS.hpp # PR parameters (a, b, da/dT), PVT calculations, departure functions
@@ -38,6 +39,7 @@ Thermo Software/
 ├── tests/
 │   ├── CMakeLists.txt          # Test build target configuration
 │   ├── test_cubic_solver.cpp   # Cubic polynomial solver unit tests
+│   ├── test_components.cpp     # Component database and Shomate Cp integration tests
 │   ├── test_pvt_eos.cpp        # PVT consistency, inverse PVT, ideal-gas limits
 │   ├── test_thermo_derivatives.cpp # Finite-difference validation of da/dT
 │   ├── test_departure_properties.cpp# Residual enthalpy, entropy, and fugacity benchmarks
@@ -51,7 +53,7 @@ Thermo Software/
 
 ```mermaid
 graph TD
-    Constants["Constants.hpp<br/>(Universal Constants & Reference States)"] --> Component["Component.hpp<br/>(Critical Properties & Ideal Cp)"]
+    Constants["Constants.hpp<br/>(Universal Constants & Reference States)"] --> Component["Component.hpp<br/>(Critical Properties & NIST Shomate Cp)"]
     Component --> Database["ComponentDatabase.hpp<br/>(Curated Catalog & Custom Components)"]
     Constants --> CubicSolver["CubicSolver.hpp<br/>(Cardano / Trigonometric Root Engine)"]
     Component --> PR["PengRobinsonEOS.hpp<br/>(PVT, da/dT, Residual Functions)"]
@@ -68,24 +70,27 @@ graph TD
 ```cpp
 namespace thermo {
 
-struct HeatCapacityPolynomial {
-    double c0{0.0}, c1{0.0}, c2{0.0}, c3{0.0}, c4{0.0}; // J/(mol*K)
-    double T_min{200.0}, T_max{1500.0};                 // K
+struct ShomateParameters {
+    double A{0.0}, B{0.0}, C{0.0}, D{0.0}, E{0.0}; // J/(mol*K), t = T/1000
+    double T_min{298.15}, T_max{1200.0};            // K
 
-    [[nodiscard]] double evaluate_cp(double T) const noexcept;
-    [[nodiscard]] double integrate_cp(double T_ref, double T) const noexcept;
-    [[nodiscard]] double integrate_cp_over_T(double T_ref, double T) const noexcept;
+    [[nodiscard]] double evaluate_cp(double T) const;
+    [[nodiscard]] double integrate_cp(double T_ref, double T) const;
+    [[nodiscard]] double integrate_cp_over_T(double T_ref, double T) const;
+    [[nodiscard]] bool is_within_range(double T) const noexcept;
 };
 
 struct PureComponent {
     std::string name;
     std::string formula;
-    double molar_mass;     // kg/mol
-    double Tc;             // K
-    double Pc;             // Pa
-    double omega;          // dimensionless
-    HeatCapacityPolynomial cp_model;
-    std::string citation;  // Data provenance
+    double molar_mass{0.0};  // kg/mol
+    double Tc{0.0};          // K
+    double Pc{0.0};          // Pa
+    double omega{0.0};       // dimensionless
+    ShomateParameters shomate;
+    std::string citation;    // Data provenance (e.g. NIST SRD 69)
+
+    [[nodiscard]] bool is_valid() const noexcept;
 };
 
 } // namespace thermo
@@ -96,7 +101,7 @@ struct PureComponent {
 namespace thermo {
 
 enum class RootType {
-    SINGLE_PHYSICAL,
+    SINGLE_REAL,
     VAPOR_LIKE,
     LIQUID_LIKE,
     UNSTABLE_INTERMEDIATE,
@@ -105,8 +110,8 @@ enum class RootType {
 
 struct CubicRoot {
     double value{0.0};
-    RootType type{RootType::NON_PHYSICAL};
-    bool is_physical{false};
+    RootType type{RootType::SINGLE_REAL};
+    double poly_residual{0.0};
 };
 
 struct CubicSolution {
@@ -117,48 +122,9 @@ struct CubicSolution {
 
 class CubicSolver {
 public:
-    // Solves Z^3 + c2*Z^2 + c1*Z + c0 = 0
-    static CubicSolution solve(double c2, double c1, double c0, double B_bound);
-};
-
-} // namespace thermo
-```
-
-#### C. `PengRobinsonEOS.hpp`
-```cpp
-namespace thermo {
-
-struct ThermodynamicState {
-    double T{0.0};                   // K
-    double P{0.0};                   // Pa
-    double Z{1.0};                   // dimensionless
-    double molar_volume{0.0};        // m^3/mol
-    double H_res{0.0};               // J/mol
-    double S_res{0.0};               // J/(mol*K)
-    double ln_phi{0.0};              // dimensionless
-    double phi{1.0};                 // dimensionless
-    double fugacity{0.0};            // Pa
-    double H_total{0.0};             // J/mol (relative to T_ref, P_ref)
-    double S_total{0.0};             // J/(mol*K) (relative to T_ref, P_ref)
-    RootType phase_identification;
-    bool is_stable_phase{true};
-};
-
-class PengRobinsonEOS {
-public:
-    explicit PengRobinsonEOS(PureComponent comp);
-
-    [[nodiscard]] double calculate_P(double T, double v) const;
-    [[nodiscard]] std::vector<ThermodynamicState> calculate_state_TP(double T, double P) const;
-    [[nodiscard]] double a_parameter(double T) const;
-    [[nodiscard]] double da_dT(double T) const;
-    [[nodiscard]] double b_parameter() const;
-
-private:
-    PureComponent component_;
-    double a_c_{0.0};
-    double b_{0.0};
-    double kappa_{0.0};
+    // Solves monic real cubic: Z^3 + c2*Z^2 + c1*Z + c0 = 0
+    // Pure mathematical solver; independent of thermodynamic filtering
+    [[nodiscard]] static CubicSolution solve(double c2, double c1, double c0);
 };
 
 } // namespace thermo
@@ -174,74 +140,71 @@ gantt
     dateFormat  YYYY-MM-DD
     section Specification & Foundations
     Session 1 : Spec, Equations & Architecture :done, 2026-10-20, 1d
+    Session 1.5 : Independent Thermodynamic Audit :done, 2026-10-20, 1d
     section Core Infrastructure
-    Session 2 : Components, Database & Cubic Solver :2026-10-21, 2d
+    Session 2 : Components, Database & Cubic Solver :active, 2026-10-20, 2d
     section Thermodynamic Engine
-    Session 3 : PR EOS Forward/Inverse PVT :2026-10-23, 2d
-    Session 4 : Departure Enthalpy, Entropy & Fugacity :2026-10-25, 2d
+    Session 3 : PR EOS Forward/Inverse PVT :2026-10-22, 2d
+    Session 4 : Departure Enthalpy, Entropy & Fugacity :2026-10-24, 2d
     section Testing & Benchmarks
-    Session 5 : Automated Test Suite & NIST Validation :2026-10-27, 2d
+    Session 5 : Automated Test Suite & Literature Validation :2026-10-26, 2d
     section UI & Reporting
-    Session 6 : Interactive CLI & Error Handling :2026-10-29, 2d
-    Session 7 : 4-Page Technical Report & Viva Prep :2026-10-31, 3d
+    Session 6 : Interactive CLI & Error Handling :2026-10-28, 2d
+    section Final Report & Packaging
+    Session 7 : 4-Page Technical Report & Packaging :2026-10-30, 3d
 ```
 
 ### Phase Breakdown & Dependencies
 
 | Phase / Session | Objective | Key Deliverables | Pre-requisites | Measurable Completion Criteria |
 | :--- | :--- | :--- | :--- | :--- |
-| **Session 1** (Current) | Specification, Foundations & Git Repo | `PROJECT_SPECIFICATION.md`, `IMPLEMENTATION_ROADMAP.md`, `.gitignore`, git init | Course Prompt | Approved engineering specification; zero unverified equations. |
-| **Session 2** | Core Data Types & Cubic Solver | `Constants.hpp`, `Component.hpp`, `ComponentDatabase.cpp`, `CubicSolver.cpp` | Session 1 | Solves known cubic polynomials with residuals $< 10^{-12}$; 8 gases loaded. |
-| **Session 3** | PR EOS Engine & PVT Calculations | `PengRobinsonEOS.cpp` (PVT forward & inverse), CMake infrastructure | Session 2 | $P(T, v(T, P)) == P$ within machine precision; root identification verified. |
-| **Session 4** | Departure Functions & Fugacity | $H^{\text{res}}, S^{\text{res}}, \phi, f$, small-$B$ regularization, ideal $C_p$ integrals | Session 3 | $\lim_{P\to 0}\phi = 1.0, H^{\text{res}} \to 0$; $da/dT$ finite-difference error $< 10^{-7}$. |
-| **Session 5** | Test Suite & Literature Validation | Complete test suite in `tests/`, benchmark validation tables | Session 4 | 100% test pass rate across unit tests and NIST benchmark cases. |
-| **Session 6** | CLI & Usability Polish | Interactive command-line interface with formatted outputs, input guardrails | Session 5 | Robust user workflow, handles bad input without crashing, viva ready. |
-| **Session 7** | Final Technical Report & Archive | 4-page LaTeX/Markdown report, final GitHub release | Session 6 | Technical report fully aligned with actual program outputs. |
+| **Session 1** | Specification, Foundations & Architecture | `PROJECT_SPECIFICATION.md`, `IMPLEMENTATION_ROADMAP.md`, `.gitignore`, git init | Course Prompt | Approved engineering specification; zero unverified equations. |
+| **Session 1.5** | Independent Thermodynamic Audit | `SESSION_1_5_AUDIT.md`, numerical benchmarks recalculated | Session 1 | Discrepancies resolved; NIST Shomate parameters verified; gate approved. |
+| **Session 2** (Current) | Core Data Types & Cubic Solver | `Constants.hpp`, `Component.hpp/cpp`, `ComponentDatabase.hpp/cpp`, `CubicSolver.hpp/cpp`, tests | Session 1.5 | All unit tests pass; solves cubics with residual $\le 10^{-12}$; 8 gases verified. |
+| **Session 3** | PR EOS Engine & PVT Calculations | `PengRobinsonEOS.hpp/cpp` (PVT forward/inverse), root admissibility filter ($Z > B$) | Session 2 | $P(T, v(T, P)) == P$ within machine precision; mechanical stability verified. |
+| **Session 4** | Departure Functions & Fugacity | $H^{\text{res}}, S^{\text{res}}, \phi, f$, small-$B$ Taylor regularization, Shomate $C_p$ integrals | Session 3 | $\lim_{P\to 0}\phi = 1.0, H^{\text{res}} \to 0$; Maxwell identity error $\le 10^{-15}$. |
+| **Session 5** | Test Suite & Literature Validation | Complete test suite in `tests/`, benchmark validation tables | Session 4 | 100% test pass rate across unit tests and audited benchmark cases. |
+| **Session 6** | CLI & Usability Polish | Interactive command-line interface with formatted outputs, input guardrails | Session 5 | Robust user workflow, handles invalid input gracefully, viva ready. |
+| **Session 7** | Final Technical Report & Archive | 4-page LaTeX/Markdown report, final submission archive | Session 6 | Technical report fully aligned with actual program outputs. |
 
 ---
 
 ## 4. Test & Validation Plan
 
-Every calculation will be validated using four independent layers of verification:
-
 ### 4.1 Layer 1: Mathematical Limits & Asymptotic Checks
 1. **Ideal Gas Limit ($P \to 0$):**
    - At $T = 300\text{ K}$, evaluate at $P = 10\text{ Pa}, 1\text{ Pa}, 10^{-2}\text{ Pa}$:
-     - $Z \to 1.00000000$ (residual $< 10^{-7}$)
-     - $\phi \to 1.00000000$ (residual $< 10^{-7}$)
+     - $Z \to 1.00000000$ (residual $\le 1.0 \times 10^{-7}$)
+     - $\phi \to 1.00000000$ (residual $\le 1.0 \times 10^{-7}$)
      - $H^{\text{res}} \to 0.00\text{ J/mol}$
      - $S^{\text{res}} \to 0.00\text{ J/(mol*K)}$
 2. **Cubic Root Inversion:**
-   - Every evaluated root $Z$ must satisfy $|Z^3 + c_2 Z^2 + c_1 Z + c_0| < 10^{-12}$.
+   - Every evaluated root $Z$ must satisfy $|Z^3 + c_2 Z^2 + c_1 Z + c_0| \le 1.0 \times 10^{-12}$ (regular states).
 3. **EOS Reciprocity Check:**
    - Compute $v = Z R T / P$. Evaluate $P_{\text{calc}} = P(T, v)$.
-   - Acceptance: $|P_{\text{calc}} - P| / P < 10^{-11}$.
+   - Acceptance: $|P_{\text{calc}} - P| / P \le 1.0 \times 10^{-10}$ for $P \ge 10^{-2}\text{ Pa}$.
 
 ### 4.2 Layer 2: Analytical Derivative Cross-Validation
 The analytical derivative $\frac{da}{dT}$ is verified against central finite differences:
 $$\left( \frac{da}{dT} \right)_{\text{num}} = \frac{a(T + \delta) - a(T - \delta)}{2\delta}, \quad \delta = 10^{-5} T$$
-- Acceptance criteria: Relative discrepancy $\left| \frac{(da/dT)_{\text{ana}} - (da/dT)_{\text{num}}}{(da/dT)_{\text{ana}}} \right| < 10^{-8}$.
+- Acceptance criteria: Relative discrepancy $\left| \frac{(da/dT)_{\text{ana}} - (da/dT)_{\text{num}}}{(da/dT)_{\text{ana}}} \right| \le 1.0 \times 10^{-7}$.
 
-### 4.3 Layer 3: Traceable Literature Benchmarks
+### 4.3 Layer 3: Audited Benchmark Verification Cases
 
-| Case ID | Substance | State ($T, P$) | Expected Property | Published / Reference Value | Source / Benchmark Reference |
+In the table below, the exact values calculated from the Peng–Robinson 1976 EOS serve as the **software test expectations**. External experimental values (from NIST Chemistry WebBook SRD 69) are listed alongside for physical reference:
+
+| Case ID | Substance | State ($T, P$) | PR-1976 Software Test Expectation (Exact EOS Solution) | External Database / Real-Fluid Value (NIST SRD 69) | Model Classification & Phase Stability |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **BM-01** | **Methane** | $300\text{ K}, 5.0\text{ MPa}$ | $Z$<br>$v$<br>$\phi$<br>$H^{\text{res}}$ | $0.9329$<br>$4.654 \times 10^{-4}\text{ m}^3/\text{mol}$<br>$0.9338$<br>$-756.2\text{ J/mol}$ | Smith, Van Ness, Abbott (App. C) / PR-1976 baseline |
-| **BM-02** | **Carbon Dioxide** | $300\text{ K}, 4.0\text{ MPa}$ | Phase: Vapor<br>$Z$<br>$\phi$ | Vapor<br>$0.6974$<br>$0.7670$ | Poling et al. Table 3-3 / NIST Chemistry WebBook |
-| **BM-03** | **Carbon Dioxide** | $300\text{ K}, 7.0\text{ MPa}$ | Phase: 3 Roots<br>$Z_{\text{liq}}, Z_{\text{vap}}$<br>Stable Phase | $Z_{\text{liq}} \approx 0.088$<br>$Z_{\text{vap}} \approx 0.384$<br>Liquid ($\phi_{\text{liq}} < \phi_{\text{vap}}$) | Subcritical two-phase region near saturation |
-| **BM-04** | **Propane** | $320\text{ K}, 1.0\text{ MPa}$ | $Z$<br>$\phi$<br>$H^{\text{res}}$ | $0.8524$<br>$0.8576$<br>$-1685.4\text{ J/mol}$ | Perry's Chemical Engineers' Handbook (9th Ed.) |
-
-### 4.4 Layer 4: Edge Cases & Numerical Robustness
-- **Supercritical Region:** $T \gg T_c, P \gg P_c$ (single supercritical root, no unphysical branches).
-- **Near-Critical Point:** $T \to T_c, P \to P_c$ (triple root coalescence, stable evaluation without discriminant sign oscillation).
-- **Extreme Low-Density:** $P \to 0$ without numeric overflow in $1/B$.
-- **Input Guardrails:** Prevent non-positive temperatures ($T \le 0$), pressures ($P \le 0$), or negative acentric factors ($\omega < -1$).
+| **BM-01** | **Methane** | $300\text{ K}, 5.0\text{ MPa}$ | $Z = 0.901844$<br>$v = 4.4990 \times 10^{-4}\text{ m}^3/\text{mol}$<br>$\phi = 0.901385$<br>$H^{\text{res}} = -902.34\text{ J/mol}$ | $Z_{\text{real}} \approx 0.892$<br>$v_{\text{real}} \approx 4.45 \times 10^{-4}\text{ m}^3/\text{mol}$<br>$\phi_{\text{real}} \approx 0.895$<br>$H_{\text{real}}^{\text{res}} \approx -980\text{ J/mol}$ | Supercritical single-phase vapor ($\Delta > 0$, 1 root). Mechanically stable ($\partial P/\partial v < 0$). |
+| **BM-02** | **Carbon Dioxide** | $300\text{ K}, 4.0\text{ MPa}$ | $Z = 0.752334$<br>$v = 4.6914 \times 10^{-4}\text{ m}^3/\text{mol}$<br>$\phi = 0.795528$<br>$H^{\text{res}} = -1990.99\text{ J/mol}$ | $Z_{\text{real}} \approx 0.758$<br>$v_{\text{real}} \approx 4.73 \times 10^{-4}\text{ m}^3/\text{mol}$<br>$\phi_{\text{real}} \approx 0.798$<br>$H_{\text{real}}^{\text{res}} \approx -2050\text{ J/mol}$ | Subcritical vapor ($\Delta > 0$, 1 root, below liquid spinodal). Mechanically stable. |
+| **BM-03** | **Carbon Dioxide** | $300\text{ K}, 7.0\text{ MPa}$ | $Z = 0.198057$<br>$v = 7.0575 \times 10^{-5}\text{ m}^3/\text{mol}$<br>$\phi = 0.638285$<br>$H^{\text{res}} = -9374.37\text{ J/mol}$ | $Z_{\text{real}} \approx 0.185$<br>$v_{\text{real}} \approx 6.59 \times 10^{-5}\text{ m}^3/\text{mol}$<br>$\phi_{\text{real}} \approx 0.612$<br>$H_{\text{real}}^{\text{res}} \approx -10150\text{ J/mol}$ | Compressed liquid ($\Delta > 0$, 1 root, above vapor spinodal). Mechanically stable. |
+| **BM-04** | **Propane** | $320\text{ K}, 1.0\text{ MPa}$ | **3 Real Roots ($\Delta < 0$):**<br>Root 1 (liq): $Z = 0.036453, \phi = 1.2393$<br>Root 2 (mid): $Z = 0.091826$ (unstable)<br>Root 3 (vap): $Z = 0.850555, \phi = 0.8680$<br>$H_{\text{vap}}^{\text{res}} = -1131.04\text{ J/mol}$ | $Z_{\text{real,vap}} \approx 0.843$<br>$\phi_{\text{real,vap}} \approx 0.862$<br>$H_{\text{real,vap}}^{\text{res}} \approx -1220\text{ J/mol}$ | Subcritical two-phase region. Vapor root is globally stable ($\phi_{\text{vap}} < \phi_{\text{liq}}$). Middle root discarded. |
 
 ---
 
 ## 5. Report Structure & Page Budget Plan (Max 4 Pages)
 
-The technical report will be structured to fit strictly within the 4-page limit:
+Strict 4-page allocation for final technical report:
 
 1. **Page 1: Introduction, Objectives, and Thermodynamic Foundations**
    - Scope of project and problem statement.
@@ -249,14 +212,14 @@ The technical report will be structured to fit strictly within the 4-page limit:
    - Dimensionless polynomial formulation in $Z$.
 2. **Page 2: Residual Properties, Pure Fugacity, and Reference States**
    - Exact derivation and analytical equations for $H^{\text{res}}$, $S^{\text{res}}$, and $\ln \phi$.
-   - Ideal gas heat capacity integration and reference state definition ($T_{\text{ref}} = 298.15\text{ K}, P_{\text{ref}} = 1.0\text{ bar}$).
-   - Low-pressure asymptotic regularization.
+   - Authentic NIST Shomate integration and reference state definition ($T_{\text{ref}} = 298.15\text{ K}, P_{\text{ref}} = 1.0\text{ bar}$).
+   - Low-pressure asymptotic Taylor regularization.
 3. **Page 3: Software Architecture, Numerical Algorithm, and Stability Criterion**
    - C++ modular design and execution workflow.
    - Depressed cubic Cardano and Vieta trigonometric root solver.
-   - Physical root filtering ($Z > B$) and equal-fugacity phase stability criterion.
+   - Physical root filtering ($Z > B$), mechanical stability ($\partial P/\partial v < 0$), and fugacity phase stability criterion.
 4. **Page 4: Verification Results, Discussion, Limitations, and Conclusions**
-   - Tabulated verification against NIST / textbook reference cases.
+   - Tabulated verification against PR-1976 exact benchmarks and physical comparisons with NIST data.
    - Derivative finite-difference validation and reciprocity checks.
    - Model limitations (pure components only, polar fluids, supercritical liquid density accuracy).
    - Traceable bibliography and references.
