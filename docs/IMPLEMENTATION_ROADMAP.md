@@ -165,7 +165,7 @@ gantt
 | **Session 4** (Completed) | Departure Functions & Fugacity | $H^{\text{res}}, S^{\text{res}}, \phi, f$, small-$B$ Taylor regularization, Shomate $C_p$ integrals, Total $H/S$, Phase Preference | Session 3 | 100% tests pass (133/133 assertions); $\lim_{P\to 0}\phi = 1.0, H^{\text{res}} \to 0$; Maxwell identity error $\le 10^{-12}$. (Done) |
 | **Session 5** (Completed) | Test Suite & Literature Validation | Complete test suite in `tests/`, benchmark validation tables, differential Maxwell/Gibbs–Helmholtz cross-checks | Session 4 | 100% test pass rate across 4 CTest targets (346/346 assertions); Gibbs–Helmholtz & Simpson quadrature verified. (Done) |
 | **Session 6** (Completed) | CLI & Usability Polish | Interactive command-line interface (`thermo_cli`), demo flags, `test_cli.cpp`, README.md | Session 5 | Robust interactive menu, input guardrails, 100% tests pass (373/373 assertions), viva-ready demonstrations. (Done) |
-| **Session 7** | Final Technical Report & Archive | 4-page LaTeX/Markdown report, final submission archive | Session 6 | Technical report fully aligned with actual program outputs. |
+| **Session 7** (Completed) | Final Technical Report & Archive | 4-page academic report `FINAL_PROJECT_REPORT.pdf`, `SUBMISSION_CHECKLIST.md`, source archive `thermo-eos-solver-source.zip` | Session 6 | Strict 4-page PDF report; 100% tests pass (373/373 assertions); clean source package built and verified. (Done) |
 
 ---
 
