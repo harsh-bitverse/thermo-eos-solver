@@ -735,7 +735,7 @@ void CLIController::run_demonstration(int case_num) {
              << "  Liquid root:       Z ~ 0.036453, phi ~ 1.239280, H_res ~ -14854.34 J/mol [Stable]\n"
              << "  Intermediate root: Z ~ 0.091826, phi ~ 1.385615, H_res ~ -8210.60 J/mol  [Unstable]\n"
              << "  Vapor root:        Z ~ 0.850555, phi ~ 0.868006, H_res ~ -1131.04 J/mol  [Stable, Preferred]\n"
-             << "  Delta G_res:       G_liq - G_vap = +947.01 J/mol (> 0 -> Vapor preferred)\n";
+             << "  Delta G_res:       G_liq - G_vap = +947.42 J/mol (> 0 -> Vapor preferred)\n";
         const auto& comp = db_.get_component("Propane");
         const double T = 320.0;
         const double P = 1.0e6;

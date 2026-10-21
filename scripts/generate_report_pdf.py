@@ -44,11 +44,11 @@ class NumberedCanvas(canvas.Canvas):
         # Running footer (all pages)
         self.setStrokeColor(colors.HexColor("#CBD5E0"))
         self.setLineWidth(0.5)
-        self.line(36, 42, 576, 42)
+        self.line(36, 40, 576, 40)
 
         footer_text = f"Page {self._pageNumber} of {page_count}"
-        self.drawRightString(576, 30, footer_text)
-        self.drawString(36, 30, "Confidential — CHL2002 Course Submission — November 2026")
+        self.drawRightString(576, 28, footer_text)
+        self.drawString(36, 28, "CHL2002 Course Project — Final Submission Report — November 2026")
         self.restoreState()
 
 
@@ -59,21 +59,21 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         pagesize=letter,
         leftMargin=36,
         rightMargin=36,
-        topMargin=40,
-        bottomMargin=46
+        topMargin=38,
+        bottomMargin=44
     )
 
     styles = getSampleStyleSheet()
 
-    # Custom styles
+    # Enhanced Typography & Styles
     title_style = ParagraphStyle(
         'DocTitle',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=15,
-        leading=18,
+        fontSize=14,
+        leading=17,
         textColor=colors.HexColor("#1A365D"),
-        spaceAfter=4,
+        spaceAfter=3,
         alignment=1 # Center
     )
 
@@ -81,10 +81,10 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         'DocSubTitle',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=9.5,
-        leading=12,
+        fontSize=9.0,
+        leading=11.5,
         textColor=colors.HexColor("#2B6CB0"),
-        spaceAfter=6,
+        spaceAfter=4,
         alignment=1
     )
 
@@ -92,8 +92,8 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         'DocMeta',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=7.5,
-        leading=10,
+        fontSize=7.8,
+        leading=10.2,
         textColor=colors.HexColor("#4A5568"),
         alignment=1
     )
@@ -102,10 +102,10 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         'SectionH1',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=10.5,
-        leading=13,
+        fontSize=10.2,
+        leading=12.5,
         textColor=colors.HexColor("#1A365D"),
-        spaceBefore=6,
+        spaceBefore=5,
         spaceAfter=3,
         keepWithNext=True
     )
@@ -114,10 +114,10 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         'SectionH2',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=8.5,
-        leading=11,
+        fontSize=8.6,
+        leading=11.0,
         textColor=colors.HexColor("#2B6CB0"),
-        spaceBefore=4,
+        spaceBefore=3,
         spaceAfter=2,
         keepWithNext=True
     )
@@ -126,42 +126,31 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         'BodyDark',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=7.8,
-        leading=10.2,
+        fontSize=8.1,
+        leading=10.6,
         textColor=colors.HexColor("#2D3748"),
-        spaceAfter=3,
+        spaceAfter=2.5,
         alignment=4 # Justified
-    )
-
-    bullet_style = ParagraphStyle(
-        'BulletText',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=7.5,
-        leading=9.8,
-        textColor=colors.HexColor("#2D3748"),
-        leftIndent=10,
-        spaceAfter=2
     )
 
     eq_style = ParagraphStyle(
         'EquationText',
         parent=styles['Normal'],
         fontName='Helvetica-Oblique',
-        fontSize=7.5,
-        leading=9.8,
+        fontSize=7.8,
+        leading=10.0,
         textColor=colors.HexColor("#1A202C"),
-        leftIndent=15,
-        spaceBefore=1,
-        spaceAfter=2
+        leftIndent=12,
+        spaceBefore=1.5,
+        spaceAfter=2.0
     )
 
     table_cell_style = ParagraphStyle(
         'TableCell',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=6.8,
-        leading=8.6,
+        fontSize=7.0,
+        leading=8.8,
         textColor=colors.HexColor("#1A202C")
     )
 
@@ -169,7 +158,7 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         'TableHeader',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=7.0,
+        fontSize=7.2,
         leading=9.0,
         textColor=colors.HexColor("#FFFFFF"),
         alignment=1
@@ -179,11 +168,11 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         'RefText',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=6.8,
-        leading=8.8,
+        fontSize=7.0,
+        leading=9.0,
         textColor=colors.HexColor("#2D3748"),
-        leftIndent=12,
-        firstLineIndent=-12,
+        leftIndent=14,
+        firstLineIndent=-14,
         spaceAfter=2
     )
 
@@ -194,44 +183,43 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     # =========================================================================
     story.append(Paragraph("CHL2002 THERMODYNAMICS COURSE PROJECT", subtitle_style))
     story.append(Paragraph("Prediction of Real-Gas PVT Behaviour, Thermodynamic Departure Functions, and Pure-Component Fugacity Using the Peng–Robinson Equation of State", title_style))
-    story.append(Paragraph("<b>Author:</b> Harsh Agarwal &nbsp;|&nbsp; <b>Language:</b> C++17 &nbsp;|&nbsp; <b>Build:</b> CMake 3.20+ (MinGW GCC 13.2) &nbsp;|&nbsp; <b>Date:</b> November 2026", meta_style))
-    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#1A365D"), spaceBefore=4, spaceAfter=5))
+    story.append(Paragraph("<b>Author:</b> Harshith N &nbsp;|&nbsp; <b>Language:</b> C++17 &nbsp;|&nbsp; <b>Build:</b> CMake 3.20+ (MinGW GCC 13.2) &nbsp;|&nbsp; <b>Date:</b> November 2026", meta_style))
+    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#1A365D"), spaceBefore=3, spaceAfter=4))
 
     story.append(Paragraph("1. Introduction, Objectives, and Physical Scope", h1_style))
     story.append(Paragraph(
-        "Accurate prediction of phase equilibria, volumetric behaviour, and thermodynamic properties of real fluids is a cornerstone "
-        "of chemical process design. Ideal-gas models fail drastically at elevated pressures and near the vapour–liquid coexistence envelope. "
-        "The objective of this project is to develop a scientifically rigorous, fully audited C++17 software application implementing the "
-        "canonical Peng–Robinson (PR-1976) cubic equation of state for pure fluids. The software is engineered to predict: "
-        "(1) Forward and inverse pressure–volume–temperature (PVT) behaviour; "
+        "Accurate prediction of phase equilibria, volumetric behaviour, and thermodynamic properties of fluids is fundamental to chemical process engineering. "
+        "Ideal-gas formulations fail significantly at elevated pressures and near saturation boundaries. The objective of this project is to develop a "
+        "modular, scientifically rigorous C++17 application implementing the canonical Peng–Robinson (PR-1976) cubic equation of state for pure fluids. "
+        "The software predicts: (1) Forward and inverse pressure–volume–temperature (PVT) behaviour; "
         "(2) Analytical compressibility factor roots with complete mechanical stability classification; "
         "(3) Residual enthalpy (<i>H</i><sup>res</sup>) and residual entropy (<i>S</i><sup>res</sup>); "
         "(4) Pure-component fugacity coefficients (ln &phi;, &phi;) and fugacities (<i>f</i>); "
         "(5) Reference-state total enthalpy and entropy referenced to the ideal gas at 298.15 K and 1.0 bar; and "
-        "(6) Thermodynamic phase preference and saturation coexistence via rigorous equality of chemical potentials.",
+        "(6) Thermodynamic phase preference and saturation coexistence checks via comparison of phase chemical potentials.",
         body_style
     ))
     story.append(Paragraph(
-        "<b>Physical Scope:</b> The software strictly treats pure chemical components. Curated datasets are provided for eight industrial "
-        "fluids: Methane (CH<sub>4</sub>), Ethane (C<sub>2</sub>H<sub>6</sub>), Propane (C<sub>3</sub>H<sub>8</sub>), n-Butane (C<sub>4</sub>H<sub>10</sub>), "
-        "Nitrogen (N<sub>2</sub>), Oxygen (O<sub>2</sub>), Carbon Dioxide (CO<sub>2</sub>), and Water Vapor (H<sub>2</sub>O). All calculations "
-        "are executed internally in strict SI units (Pa, K, m<sup>3</sup>/mol, J/mol, J/(mol·K)).",
+        "<b>Physical Scope & Data Conventions:</b> The software treats pure chemical components only; multicomponent mixtures and mixing rules are out of scope. "
+        "Curated property datasets are provided for eight industrial fluids: Methane (CH<sub>4</sub>), Ethane (C<sub>2</sub>H<sub>6</sub>), Propane (C<sub>3</sub>H<sub>8</sub>), "
+        "n-Butane (C<sub>4</sub>H<sub>10</sub>), Nitrogen (N<sub>2</sub>), Oxygen (O<sub>2</sub>), Carbon Dioxide (CO<sub>2</sub>), and Water Vapor (H<sub>2</sub>O). "
+        "All calculations are performed internally in strict SI units (Pa, K, m<sup>3</sup>/mol, J/mol, J/(mol·K)).",
         body_style
     ))
 
     story.append(Paragraph("2. Governing Mathematical Model and Thermodynamic Equations", h1_style))
     story.append(Paragraph("2.1 The Peng–Robinson Cubic Equation of State (PR-1976)", h2_style))
     story.append(Paragraph(
-        "The canonical pressure-explicit formulation proposed by Peng and Robinson (1976) expresses pressure <i>P</i> as the sum of a "
-        "repulsive hard-sphere term and an attractive intermolecular dispersion term:",
+        "The canonical pressure-explicit cubic formulation proposed by Peng and Robinson (1976) models pressure <i>P</i> as the sum of a repulsive hard-sphere contribution "
+        "and an attractive intermolecular dispersion contribution:",
         body_style
     ))
     story.append(Paragraph("<i>P</i>(<i>T</i>, <i>v</i>) = [<i>R</i><i>T</i> / (<i>v</i> &minus; <i>b</i>)] &minus; [<i>a</i>(<i>T</i>) / (<i>v</i><sup>2</sup> + 2<i>b</i><i>v</i> &minus; <i>b</i><sup>2</sup>)]", eq_style))
     story.append(Paragraph(
         "where <i>R</i> = 8.314462618 J/(mol·K) is the universal gas constant (CODATA 2018), <i>v</i> is molar volume [m<sup>3</sup>/mol], "
         "<i>b</i> is the co-volume parameter representing finite molecular volume, and <i>a</i>(<i>T</i>) is the temperature-dependent attractive parameter. "
-        "Enforcing the critical point inflection conditions (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i><sub><i>c</i></sub></sub> = 0 and "
-        "(&part;<sup>2</sup><i>P</i>/&part;<i>v</i><sup>2</sup>)<sub><i>T</i><sub><i>c</i></sub></sub> = 0 yields the universal critical parameters:",
+        "Enforcing the critical-point inflection constraints (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i><sub><i>c</i></sub></sub> = 0 and "
+        "(&part;<sup>2</sup><i>P</i>/&part;<i>v</i><sup>2</sup>)<sub><i>T</i><sub><i>c</i></sub></sub> = 0 yields the universal critical parameter relationships:",
         body_style
     ))
     story.append(Paragraph(
@@ -240,9 +228,16 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         "where &Omega;<sub><i>a</i></sub> &approx; 0.4572355289, &nbsp;&Omega;<sub><i>b</i></sub> &approx; 0.0777960739",
         eq_style
     ))
+    story.append(Paragraph(
+        "<b>Note on PR Parameter Precision:</b> In literature and textbook presentations, &Omega;<sub><i>a</i></sub> and &Omega;<sub><i>b</i></sub> are commonly rounded to "
+        "0.45724 and 0.07780, respectively. The software implementation deliberately employs the full analytical double-precision roots derived directly from the "
+        "critical-point cubic constraint (&Omega;<sub><i>b</i></sub> = (&radic;2 &minus; 1) / [3(1 + &radic;2)]), ensuring exact mathematical consistency with zero residual at the critical point.",
+        body_style
+    ))
+
     story.append(Paragraph("2.2 Temperature Dependence and Analytical Derivative", h2_style))
     story.append(Paragraph(
-        "The attractive parameter accounts for temperature effects through the dimensionless scaling function &alpha;(<i>T</i><sub><i>r</i></sub>, &omega;):",
+        "The attractive parameter accounts for thermal kinetic effects through the dimensionless scaling function &alpha;(<i>T</i><sub><i>r</i></sub>, &omega;):",
         body_style
     ))
     story.append(Paragraph(
@@ -253,7 +248,7 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     ))
     story.append(Paragraph(
         "where <i>T</i><sub><i>r</i></sub> = <i>T</i> / <i>T</i><sub><i>c</i></sub> is the reduced temperature and &omega; is the Pitzer acentric factor. "
-        "The exact analytical temperature derivative (<i>da</i>/<i>dT</i>), vital for departure functions, is given without empirical approximation by:",
+        "The analytical temperature derivative (<i>da</i>/<i>dT</i>), essential for evaluating departure functions, is evaluated exactly as:",
         body_style
     ))
     story.append(Paragraph("<i>da</i>/<i>dT</i> = &minus; [ <i>a</i><sub><i>c</i></sub> &kappa; &alpha;<sup>1/2</sup>(<i>T</i>) ] / [ (<i>T</i> <i>T</i><sub><i>c</i></sub>)<sup>1/2</sup> ] &nbsp;&nbsp; [Pa·m<sup>6</sup>/(mol<sup>2</sup>·K)]", eq_style))
@@ -267,8 +262,8 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     ))
     story.append(Paragraph("<i>Z</i><sup>3</sup> &minus; (1 &minus; <i>B</i>) <i>Z</i><sup>2</sup> + (<i>A</i> &minus; 3<i>B</i><sup>2</sup> &minus; 2<i>B</i>) <i>Z</i> &minus; (<i>A</i><i>B</i> &minus; <i>B</i><sup>2</sup> &minus; <i>B</i><sup>3</sup>) = 0", eq_style))
     story.append(Paragraph(
-        "At physical states, only roots satisfying <i>Z</i> &gt; <i>B</i> correspond to positive molar volumes exceeding the co-volume (<i>v</i> &gt; <i>b</i>). "
-        "Roots violating this boundary are strictly discarded as mathematical artefacts.",
+        "At physically meaningful fluid states, only roots satisfying <i>Z</i> &gt; <i>B</i> correspond to molar volumes exceeding the co-volume (<i>v</i> &gt; <i>b</i>). "
+        "Any mathematical roots with <i>Z</i> &le; <i>B</i> represent unphysical negative or sub-molecular volumes and are strictly filtered out.",
         body_style
     ))
 
@@ -279,9 +274,9 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     # =========================================================================
     story.append(Paragraph("2.4 Residual Thermodynamic Departure Functions", h2_style))
     story.append(Paragraph(
-        "Residual departure properties describe the difference between the actual thermodynamic state of a fluid and an ideal gas at the same temperature and pressure: "
+        "Residual departure functions describe the difference between the actual thermodynamic property of a fluid and that of an ideal gas at the same temperature and pressure: "
         "<i>M</i><sup>res</sup>(<i>T</i>, <i>P</i>) &equiv; <i>M</i>(<i>T</i>, <i>P</i>) &minus; <i>M</i><sup>ig</sup>(<i>T</i>, <i>P</i>). "
-        "Using the fundamental Maxwell relations and integrating along an isothermal path from infinite volume to molar volume <i>v</i>:",
+        "Integrating along an isothermal path from infinite volume (ideal gas limit) to molar volume <i>v</i> using the exact Maxwell relations yields the closed-form PR expressions:",
         body_style
     ))
     story.append(Paragraph(
@@ -295,7 +290,7 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         eq_style
     ))
     story.append(Paragraph(
-        "These closed-form equations (Peng & Robinson 1976, Eqs. 17–18) satisfy the rigorous thermodynamic identity "
+        "Within the mathematical framework of the Peng–Robinson EOS, these analytical expressions satisfy the fundamental thermodynamic identity "
         "<i>G</i><sup>res</sup> = <i>H</i><sup>res</sup> &minus; <i>T</i> <i>S</i><sup>res</sup> = <i>R</i><i>T</i> ln &phi; identically.",
         body_style
     ))
@@ -303,7 +298,7 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     story.append(Paragraph("2.5 Pure-Component Fugacity Coefficient and Fugacity", h2_style))
     story.append(Paragraph(
         "The fugacity coefficient &phi; &equiv; <i>f</i> / <i>P</i> represents the dimensionless activity of the fluid relative to an ideal gas. "
-        "From the fundamental thermodynamic relation ln &phi; = &int;<sub>0</sub><sup><i>P</i></sup> [(<i>Z</i> &minus; 1) / <i>P</i>] <i>dP</i>, the exact PR expression is:",
+        "From the classical thermodynamic definition ln &phi; = &int;<sub>0</sub><sup><i>P</i></sup> [(<i>Z</i> &minus; 1) / <i>P</i>] <i>dP</i>, the exact PR analytical solution is:",
         body_style
     ))
     story.append(Paragraph(
@@ -353,15 +348,23 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         "<i>S</i><sup>res</sup>(<i>T</i>, <i>P</i>, <i>Z</i>) &minus; <i>S</i><sup>res</sup>(<i>T</i><sub>ref</sub>, <i>P</i><sub>ref</sub>, <i>Z</i><sub>ref</sub>)",
         eq_style
     ))
+    story.append(Paragraph(
+        "<b>Steam Reference State Limitation:</b> NIST Shomate gas-phase parameters for Water Vapor are valid exclusively in [500.0, 1700.0] K. "
+        "Because <i>T</i><sub>ref</sub> = 298.15 K lies outside this interval, total <i>H</i> and <i>S</i> relative to standard conditions are "
+        "reported as N/A with an explicit diagnostic message rather than extrapolating invalid polynomials. Within the PR model, PVT, fugacity, and "
+        "residual departure properties for water remain fully operational across all valid temperatures.",
+        body_style
+    ))
 
     story.append(Paragraph("2.7 Low-Pressure Taylor Series Regularization", h2_style))
     story.append(Paragraph(
-        "At near-vacuum pressures (<i>P</i> &lt; 10 Pa), <i>B</i> &rarr; 0, causing the quotient ln[(<i>Z</i> + (1+&radic;2)<i>B</i>)/(<i>Z</i> + (1&minus;&radic;2)<i>B</i>)] / (2&radic;2 <i>B</i>) "
-        "to approach 0 / 0. To prevent catastrophic floating-point cancellation, the software switches to a 4-term analytical Taylor series when <i>B</i>/<i>Z</i> &lt; 10<sup>&minus;5</sup>:",
+        "At near-vacuum pressures (<i>P</i> &lt; 10 Pa), <i>B</i> &rarr; 0, causing the logarithmic quotient term "
+        "<i>I</i><sub><i>L</i></sub> = ln[(<i>Z</i> + (1+&radic;2)<i>B</i>)/(<i>Z</i> + (1&minus;&radic;2)<i>B</i>)] / (2&radic;2 <i>B</i>) to approach 0 / 0. "
+        "In the C++ implementation, this is regularized by defining <i>u</i> &equiv; 2&radic;2 <i>B</i> / [<i>Z</i> + (1 &minus; &radic;2)<i>B</i>] and expanding ln(1 + <i>u</i>)/<i>u</i>:",
         body_style
     ))
-    story.append(Paragraph("<i>I</i><sub><i>L</i></sub> = (1 / <i>Z</i>) &middot; [ 1 &minus; (<i>B</i>/<i>Z</i>) + (5/3)(<i>B</i>/<i>Z</i>)<sup>2</sup> &minus; 3(<i>B</i>/<i>Z</i>)<sup>3</sup> + (33/5)(<i>B</i>/<i>Z</i>)<sup>4</sup> ]", eq_style))
-    story.append(Paragraph("This maintains double-precision continuity to 10<sup>&minus;16</sup> down to <i>P</i> = 10<sup>&minus;5</sup> Pa.", body_style))
+    story.append(Paragraph("<i>I</i><sub><i>L</i></sub> = [ 1 / (<i>Z</i> + (1 &minus; &radic;2)<i>B</i>) ] &middot; [ 1 &minus; <i>u</i>/2 + <i>u</i><sup>2</sup>/3 &minus; <i>u</i><sup>3</sup>/4 ] &nbsp;&nbsp; for |<i>u</i>| &lt; 10<sup>&minus;5</sup>", eq_style))
+    story.append(Paragraph("This maintains full double-precision numerical continuity without catastrophic subtraction cancellation down to <i>P</i> = 10<sup>&minus;5</sup> Pa.", body_style))
 
     story.append(PageBreak())
 
@@ -370,36 +373,38 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     # =========================================================================
     story.append(Paragraph("2.8 Analytical Cubic Root Solver and Stability Classification", h2_style))
     story.append(Paragraph(
-        "The cubic equation in <i>Z</i> is solved analytically using Cardano's formulation transformed into depressed form "
+        "The cubic polynomial in <i>Z</i> is solved analytically using Cardano's method transformed into depressed form "
         "<i>y</i><sup>3</sup> + <i>p</i><i>y</i> + <i>q</i> = 0 via the Tschirnhaus substitution <i>Z</i> = <i>y</i> &minus; <i>c</i><sub>2</sub>/3. "
-        "The discriminant &Delta; = <i>q</i><sup>2</sup>/4 + <i>p</i><sup>3</sup>/27 governs the root structure: "
-        "(1) If &Delta; &gt; 0, one real root exists (Cardano's real radical formula); "
+        "The cubic discriminant &Delta; = <i>q</i><sup>2</sup>/4 + <i>p</i><sup>3</sup>/27 determines the physical root topology: "
+        "(1) If &Delta; &gt; 0, exactly one real root exists (Cardano's real radical formula); "
         "(2) If &Delta; &lt; 0, three distinct real roots exist (Vieta's trigonometric formulation); and "
         "(3) If &Delta; = 0, multiple real roots coalesce.",
         body_style
     ))
     story.append(Paragraph(
         "<b>Mechanical Stability Criterion:</b> For every physical root (<i>Z</i> &gt; <i>B</i>), the isothermal pressure–volume derivative "
-        "(&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> is evaluated analytically: "
+        "(&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> is evaluated analytically from the PR equation: "
         "(&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> = &minus;<i>R</i><i>T</i>/(<i>v</i> &minus; <i>b</i>)<sup>2</sup> + <i>a</i>(<i>T</i>)(2<i>v</i> + 2<i>b</i>)/(<i>v</i><sup>2</sup> + 2<i>b</i><i>v</i> &minus; <i>b</i><sup>2</sup>)<sup>2</sup>. "
-        "States with (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> &lt; 0 are <b>STABLE</b> (compression increases pressure). "
-        "States with (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> &ge; 0 are <b>UNSTABLE</b> (spinodal states; physically unobservable).",
+        "Roots with (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> &lt; 0 are <b>STABLE</b> (compression increases pressure). "
+        "Roots with (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> &ge; 0 are <b>UNSTABLE</b> (spinodal states; physically unobservable).",
         body_style
     ))
     story.append(Paragraph(
-        "<b>Phase Preference Criterion:</b> In the three-root subcritical region, the smallest root (<i>Z</i><sub>min</sub>) is liquid-like, "
+        "<b>Phase Preference Criterion & Equilibrium:</b> In the three-root subcritical region, the smallest root (<i>Z</i><sub>min</sub>) is liquid-like, "
         "the largest root (<i>Z</i><sub>max</sub>) is vapour-like, and the intermediate root is mechanically unstable. "
-        "Phase stability is decided by the minimum Gibbs free energy, which corresponds to the lower fugacity coefficient &phi;: "
+        "Thermodynamic phase stability is governed by the minimum Gibbs free energy, which corresponds to the lower fugacity coefficient &phi;: "
         "&Delta;<i>G</i><sup>res</sup> = <i>G</i><sub>liq</sub><sup>res</sup> &minus; <i>G</i><sub>vap</sub><sup>res</sup> = <i>R</i><i>T</i> ln(&phi;<sub>liq</sub> / &phi;<sub>vap</sub>). "
-        "If &phi;<sub>vap</sub> &lt; &phi;<sub>liq</sub> (&Delta;<i>G</i><sup>res</sup> &gt; 0), the vapour phase is preferred. "
+        "If &phi;<sub>vap</sub> &lt; &phi;<sub>liq</sub> (&Delta;<i>G</i><sup>res</sup> &gt; 0), the vapour phase has lower chemical potential and is the preferred stable state. "
         "If &phi;<sub>liq</sub> &lt; &phi;<sub>vap</sub> (&Delta;<i>G</i><sup>res</sup> &lt; 0), the liquid phase is preferred. "
-        "If &phi;<sub>liq</sub> &approx; &phi;<sub>vap</sub> within 10<sup>&minus;5</sup> relative tolerance, saturated two-phase equilibrium exists.",
+        "At user-specified states where multiple roots exist, if the relative difference |&phi;<sub>liq</sub> &minus; &phi;<sub>vap</sub>| / &phi;<sub>vap</sub> &le; 10<sup>&minus;5</sup>, "
+        "the program identifies approximate saturated two-phase equilibrium. Note that the program performs state evaluation at specified (<i>T</i>, <i>P</i>) inputs "
+        "rather than iteratively solving for saturation pressure via a bubble/dew-point algorithm from scratch.",
         body_style
     ))
 
     story.append(Paragraph("3. Software Architecture and Implementation", h1_style))
     story.append(Paragraph(
-        "The software is designed as a modular, header/source C++17 library (<code>thermo_core</code>) decoupled from user-interface logic. "
+        "The software is designed as a modular, header/source C++17 library (<code>thermo_core</code>) strictly decoupled from user-interface logic. "
         "It relies exclusively on the C++ standard library (<code>&lt;cmath&gt;</code>, <code>&lt;vector&gt;</code>, <code>&lt;string&gt;</code>, <code>&lt;optional&gt;</code>, <code>&lt;iostream&gt;</code>) with zero external dependencies.",
         body_style
     ))
@@ -407,7 +412,7 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     # Architecture Table
     arch_data = [
         [Paragraph("Module / Component", table_header_style), Paragraph("Source Files", table_header_style), Paragraph("Architectural Responsibility & Function", table_header_style)],
-        [Paragraph("<b>Constants</b>", table_cell_style), Paragraph("include/thermo/Constants.hpp", table_cell_style), Paragraph("CODATA universal gas constant <i>R</i>, standard reference state constants, and analytical PR-1976 parameters.", table_cell_style)],
+        [Paragraph("<b>Constants</b>", table_cell_style), Paragraph("include/thermo/Constants.hpp", table_cell_style), Paragraph("Universal gas constant <i>R</i> (CODATA 2018), reference-state constants, exact analytical PR-1976 parameters.", table_cell_style)],
         [Paragraph("<b>Component & Database</b>", table_cell_style), Paragraph("src/Component.cpp<br/>src/ComponentDatabase.cpp", table_cell_style), Paragraph("Validates physical parameters; stores curated database for 8 industrial gases; evaluates analytical Shomate integrals.", table_cell_style)],
         [Paragraph("<b>Cubic Solver</b>", table_cell_style), Paragraph("src/CubicSolver.cpp", table_cell_style), Paragraph("Analytical Cardano/Vieta polynomial solver; filters duplicate roots; guarantees residuals &le; 10<sup>&minus;12</sup>.", table_cell_style)],
         [Paragraph("<b>PR EOS Engine</b>", table_cell_style), Paragraph("src/PengRobinsonEOS.cpp", table_cell_style), Paragraph("Forward/inverse PVT, (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub>, departure functions <i>H</i><sup>res</sup>, <i>S</i><sup>res</sup>, fugacity &phi;, and phase preference.", table_cell_style)],
@@ -435,7 +440,7 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
         body_style
     ))
     story.append(Paragraph("<code>cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build</code>", eq_style))
-    story.append(Paragraph("To run the full automated CTest suite (all 5 targets, 373 assertions):", body_style))
+    story.append(Paragraph("To execute the full automated CTest suite (5 executables, 373 assertions):", body_style))
     story.append(Paragraph("<code>ctest --test-dir build --output-on-failure</code>", eq_style))
     story.append(Paragraph("To run the interactive CLI or automated demonstration benchmarks:", body_style))
     story.append(Paragraph("<code>./build/thermo_cli &nbsp;&nbsp;# Interactive mode<br/>./build/thermo_cli --demo all &nbsp;&nbsp;# Automated demonstration benchmarks</code>", eq_style))
@@ -447,7 +452,7 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
     # =========================================================================
     story.append(Paragraph("4. Verification Results and Audited Numerical Benchmarks", h1_style))
     story.append(Paragraph(
-        "All thermodynamic and volumetric calculations were independently verified against literature benchmarks and internal mathematical consistency checks. "
+        "The implementation was evaluated using direct benchmark demonstrations and independent mathematical consistency checks. "
         "The table below reports values confirmed by direct execution of `thermo_cli`:",
         body_style
     ))
@@ -478,20 +483,21 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
 
     story.append(Paragraph("4.1 In-Depth Analysis of Multi-Root Propane Behaviour (Demo 3)", h2_style))
     story.append(Paragraph(
-        "At 320 K and 1.0 MPa, Propane lies in the subcritical two-phase region (&Delta; = &minus;1.083&times;10<sup>&minus;5</sup> &lt; 0), generating three real roots: "
-        "Root 1 (liquid-like, <i>Z</i> = 0.036453), Root 2 (intermediate, <i>Z</i> = 0.091826), and Root 3 (vapour-like, <i>Z</i> = 0.850555). "
-        "The intermediate root exhibits (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> = +1.8825&times;10<sup>10</sup> Pa/(m<sup>3</sup>/mol) &gt; 0, "
-        "confirming it is mechanically unstable and located inside the spinodal zone. For the two mechanically stable roots, "
-        "&phi;<sub>vap</sub> = 0.868006 &lt; &phi;<sub>liq</sub> = 1.239280, producing &Delta;<i>G</i><sup>res</sup> = <i>R</i><i>T</i> ln(&phi;<sub>liq</sub>/&phi;<sub>vap</sub>) = +947.42 J/mol &gt; 0. "
-        "The vapour phase possesses strictly lower chemical potential (&mu;<sub>vap</sub> &lt; &mu;<sub>liq</sub>) and is selected as the stable equilibrium state.",
+        "At 320 K and 1.0 MPa, Propane lies in the subcritical three-root region of the Peng–Robinson equation (&Delta; = &minus;1.083&times;10<sup>&minus;5</sup> &lt; 0), "
+        "generating three real roots: Root 1 (liquid-like, <i>Z</i> = 0.036453), Root 2 (intermediate, <i>Z</i> = 0.091826), and Root 3 (vapour-like, <i>Z</i> = 0.850555). "
+        "The existence of three physical roots does not alone prove vapour–liquid coexistence; rather, at fixed temperature and pressure, phase preference is determined "
+        "by comparing the fugacity coefficients of the mechanically stable roots. The intermediate root exhibits (&part;<i>P</i>/&part;<i>v</i>)<sub><i>T</i></sub> = "
+        "+1.8825&times;10<sup>10</sup> Pa/(m<sup>3</sup>/mol) &gt; 0, confirming it is mechanically unstable and located inside the spinodal zone. For the two mechanically "
+        "stable roots, &phi;<sub>vap</sub> = 0.868006 &lt; &phi;<sub>liq</sub> = 1.239280, producing &Delta;<i>G</i><sup>res</sup> = <i>R</i><i>T</i> ln(&phi;<sub>liq</sub>/&phi;<sub>vap</sub>) = "
+        "+947.42 J/mol &gt; 0. The vapour phase possesses strictly lower chemical potential (&mu;<sub>vap</sub> &lt; &mu;<sub>liq</sub>) and represents the thermodynamically preferred stable state.",
         body_style
     ))
 
     story.append(Paragraph("4.2 Automated Testing and Independent Differential Maxwell Cross-Checks", h2_style))
     story.append(Paragraph(
         "The repository contains an automated test suite of <b>373 assertions across 5 CTest executables (100% pass rate)</b>. "
-        "Circularity in validation was strictly avoided by implementing true independent differential checks: "
-        "(1) <b>Gibbs–Helmholtz Cross-Check:</b> <i>H</i><sup>res</sup> was independently verified against numerical central differences "
+        "Circularity in validation was avoided by implementing independent differential checks: "
+        "(1) <b>Gibbs–Helmholtz Cross-Check:</b> <i>H</i><sup>res</sup> was verified against numerical central differences "
         "&minus;<i>R</i><i>T</i><sup>2</sup> (&part; ln &phi;/&part;<i>T</i>)<sub><i>P</i></sub> with &delta;<i>T</i> = 0.1 mK, matching to a relative error of 3.8&times;10<sup>&minus;10</sup>; "
         "(2) <b>Pressure Fugacity Differential:</b> (&part; ln &phi;/&part;<i>P</i>)<sub><i>T</i></sub> was matched to (<i>Z</i> &minus; 1)/<i>P</i> to within 1.4&times;10<sup>&minus;9</sup>; and "
         "(3) <b>Numerical Quadrature:</b> Analytical Shomate integrals for &Delta;<i>H</i><sup>ig</sup> and &Delta;<i>S</i><sup>ig</sup> were cross-checked "
@@ -501,23 +507,23 @@ def build_pdf(filename="docs/FINAL_PROJECT_REPORT.pdf"):
 
     story.append(Paragraph("5. Assumptions, Limitations, and Conclusion", h1_style))
     story.append(Paragraph(
-        "<b>Model Scope and Limitations:</b> "
+        "<b>Model Scope and Physical Limitations:</b> "
         "(1) <i>Pure Fluids Only:</i> Multicomponent mixtures and mixing rules are out of scope. "
         "(2) <i>Steam Reference State Limitation:</i> NIST Shomate gas-phase parameters for Water Vapor are valid only in [500.0, 1700.0] K. "
         "Because <i>T</i><sub>ref</sub> = 298.15 K lies outside this interval, total <i>H</i> and <i>S</i> are reported as N/A with clear diagnostics; "
-        "PVT, fugacity, and residual departure functions remain fully operational. "
+        "PVT, fugacity, and residual departure functions remain fully operational within the PR model framework. "
         "(3) <i>No Unphysical Extrapolation:</i> Calculating outside documented Shomate intervals throws exceptions rather than generating erroneous values. "
         "(4) <i>Cubic Liquid Volume Accuracy:</i> Near the critical point, two-parameter cubic EOSs typically underestimate liquid densities by 5–10% without volume translation (Peneloux).",
         body_style
     ))
     story.append(Paragraph(
-        "<b>Conclusion:</b> The software provides a mathematically rigorous, verified, and robust engineering tool for pure-fluid thermodynamics. "
-        "It successfully models complex non-ideal fluid behaviour, multi-root phase preference, and departure functions while maintaining high numerical precision.",
+        "<b>Conclusion:</b> The software provides a mathematically sound, verified, and robust engineering implementation of the pure-component Peng–Robinson equation of state. "
+        "It successfully evaluates volumetric behaviour, multi-root phase preference, and thermodynamic departure functions while maintaining high numerical precision.",
         body_style
     ))
 
     story.append(Paragraph("References", h2_style))
-    story.append(Paragraph("[1] Peng, D.-Y., & Robinson, D. B. (1976). A New Two-Constant Equation of State. <i>Ind. Eng. Chem. Fundam.</i>, 15(1), 59–64.", ref_style))
+    story.append(Paragraph("[1] Peng, D.-Y., & Robinson, D. B. (1976). A New Two-Constant Equation of State. <i>Ind. Eng. Chem. Fundam.</i>, 15(1), 59–64. https://doi.org/10.1021/i160057a011", ref_style))
     story.append(Paragraph("[2] Linstrom, P. J., & Mallard, W. G., Eds. (2023). <i>NIST Chemistry WebBook, NIST Standard Reference Database Number 69</i>, National Institute of Standards and Technology, Gaithersburg MD. https://webbook.nist.gov", ref_style))
     story.append(Paragraph("[3] Poling, B. E., Prausnitz, J. M., & O'Connell, J. P. (2001). <i>The Properties of Gases and Liquids</i>, 5th Ed., McGraw-Hill, New York.", ref_style))
 

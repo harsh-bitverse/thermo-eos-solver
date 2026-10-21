@@ -2,7 +2,7 @@
 
 **Project Title:** Prediction of Real-Gas PVT Behaviour, Thermodynamic Departure Functions, and Pure-Component Fugacity Using the Peng–Robinson Equation of State  
 **Course:** CHL2002 Thermodynamics  
-**Author:** Harsh Agarwal  
+**Author:** Harshith N  
 **Language & Standard:** C++17  
 **Build System:** CMake 3.20+ (MinGW-W64 GCC 13.2)  
 **Submission Due Date:** November 10, 2026  
