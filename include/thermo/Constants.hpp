@@ -63,6 +63,9 @@ inline constexpr double DERIVATIVE_REL_TOL = 1.0e-7;
 /// for (1 / (2*sqrt(2)*B)) * ln(...) to avoid catastrophic cancellation in floating-point 0/0
 inline constexpr double SMALL_B_TAYLOR_THRESHOLD = 1.0e-5;
 
+/// Relative tolerance on fugacity coefficients to identify liquid-vapor saturation equilibrium
+inline constexpr double EQUILIBRIUM_FUGACITY_TOL = 1.0e-5;
+
 } // namespace thermo::constants
 
 #endif // THERMO_CONSTANTS_HPP

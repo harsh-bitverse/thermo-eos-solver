@@ -12,3 +12,9 @@ add_test(NAME test_components COMMAND test_components)
 add_executable(test_pvt_eos test_pvt_eos.cpp)
 target_link_libraries(test_pvt_eos PRIVATE thermo_core)
 add_test(NAME test_pvt_eos COMMAND test_pvt_eos)
+
+# Tests for residual properties, fugacity, total H/S, and phase equilibrium (Session 4)
+add_executable(test_thermo_properties test_thermo_properties.cpp)
+target_link_libraries(test_thermo_properties PRIVATE thermo_core)
+add_test(NAME test_thermo_properties COMMAND test_thermo_properties)
+
