@@ -139,6 +139,6 @@ Direct reproduction from `thermo_cli --demo all`:
 
 * **Repository:** `https://github.com/harsh-bitverse/thermo-eos-solver.git`
 * **Branch:** `main` tracking `origin/main`
-* **Commit:** `8d271d3`
+* **Commit:** `177d0ee`
 * **Status:** Synchronized cleanly with remote.
 
