@@ -219,6 +219,7 @@ Total Assertion Count: 329 passed, 0 failed.
 
 ## 8. Git Commit Record
 
-* **Commit Hash:** `208198e`
+* **Commit Hash:** `208198e` (implementation) and `3f6c911` (documentation)
 * **Status:** Working tree clean, all 4 CTest targets passing (329/329 total assertions).
+* **Remote:** Pushed and synchronized with GitHub remote `origin/main` (`https://github.com/harsh-bitverse/thermo-eos-solver.git`).
 
