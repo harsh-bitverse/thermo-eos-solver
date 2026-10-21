@@ -24,6 +24,16 @@ target_include_directories(thermo_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+# CLI application executable
+add_executable(thermo_cli
+    src/cli_main.cpp
+    src/cli/CLIController.cpp
+)
+target_include_directories(thermo_cli PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(thermo_cli PRIVATE thermo_core)
+
 # Automated testing
 enable_testing()
 add_subdirectory(tests)

@@ -18,3 +18,9 @@ add_executable(test_thermo_properties test_thermo_properties.cpp)
 target_link_libraries(test_thermo_properties PRIVATE thermo_core)
 add_test(NAME test_thermo_properties COMMAND test_thermo_properties)
 
+# Tests for CLI and user interaction (Session 6)
+add_executable(test_cli test_cli.cpp ../src/cli/CLIController.cpp)
+target_include_directories(test_cli PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_link_libraries(test_cli PRIVATE thermo_core)
+add_test(NAME test_cli COMMAND test_cli)
+
