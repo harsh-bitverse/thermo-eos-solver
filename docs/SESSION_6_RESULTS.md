@@ -205,6 +205,6 @@ cmake --build build --clean-first
 
 - **Target Branch:** `main`
 - **Remote:** `origin` (`https://github.com/harsh-bitverse/thermo-eos-solver.git`)
-- **Implementation Commit:** `14b60da`
+- **Implementation Commit:** `e46914e`
 - **Total Test Suite:** 373 assertions passing across 5 CTest targets (100% pass rate)
 - **Status:** Synchronized cleanly with remote.
