@@ -443,6 +443,9 @@ double PengRobinsonEOS::calculate_fugacity(double T, double P, double Z) const {
 }
 
 double PengRobinsonEOS::calculate_H_total(double T, double P, double Z) const {
+    if (!ref_state_initialized_) {
+        throw std::runtime_error("Reference state departures have not been initialized.");
+    }
     if (!component_.shomate.has_value() || !component_.shomate->is_defined()) {
         throw std::runtime_error("Component '" + component_.name +
                                  "' does not have ideal-gas Shomate heat capacity parameters defined.");
@@ -468,6 +471,9 @@ double PengRobinsonEOS::calculate_H_total(double T, double P, double Z) const {
 }
 
 double PengRobinsonEOS::calculate_S_total(double T, double P, double Z) const {
+    if (!ref_state_initialized_) {
+        throw std::runtime_error("Reference state departures have not been initialized.");
+    }
     if (!component_.shomate.has_value() || !component_.shomate->is_defined()) {
         throw std::runtime_error("Component '" + component_.name +
                                  "' does not have ideal-gas Shomate heat capacity parameters defined.");

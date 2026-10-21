@@ -235,6 +235,40 @@ int main() {
         report_test("Test 7: Registering duplicate component throws invalid_argument", threw);
     }
 
+    // ------------------------------------------------------------------------
+    // Test 8: Independent numerical quadrature validation of Shomate integrals
+    // ------------------------------------------------------------------------
+    {
+        const auto& ch4 = db.get_component("CH4");
+        const auto& sh = ch4.shomate.value();
+        const double T1 = 300.0;
+        const double T2 = 800.0;
+
+        // Composite Simpson's 1/3 rule with N = 1000 subintervals
+        const int N = 1000;
+        const double h = (T2 - T1) / N;
+        double simpson_H = sh.evaluate_cp(T1) + sh.evaluate_cp(T2);
+        double simpson_S = (sh.evaluate_cp(T1) / T1) + (sh.evaluate_cp(T2) / T2);
+
+        for (int i = 1; i < N; ++i) {
+            const double T_i = T1 + i * h;
+            const double cp_i = sh.evaluate_cp(T_i);
+            const double weight = (i % 2 == 1) ? 4.0 : 2.0;
+            simpson_H += weight * cp_i;
+            simpson_S += weight * (cp_i / T_i);
+        }
+        simpson_H *= (h / 3.0);
+        simpson_S *= (h / 3.0);
+
+        const double ana_H = sh.integrate_cp(T1, T2);
+        const double ana_S = sh.integrate_cp_over_T(T1, T2);
+
+        report_test("Test 8: Simpson vs analytical integrate_cp relative error <= 1e-6",
+                    std::abs(ana_H - simpson_H) / simpson_H <= 1.0e-6);
+        report_test("Test 8: Simpson vs analytical integrate_cp_over_T relative error <= 1e-6",
+                    std::abs(ana_S - simpson_S) / simpson_S <= 1.0e-6);
+    }
+
     std::cout << "==================================================\n";
     std::cout << "SUMMARY: Passed " << g_pass_count << ", Failed " << g_fail_count << "\n";
     std::cout << "==================================================\n";

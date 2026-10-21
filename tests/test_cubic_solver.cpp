@@ -171,6 +171,50 @@ int main() {
         }
     }
 
+    // ------------------------------------------------------------------------
+    // Test 9: Canonical PR Critical Point Triple Root (T = Tc, P = Pc)
+    // Dimensionless parameters: A = Omega_a, B = Omega_b
+    // Expected: p == 0, q == 0, Delta == 0, Triple root Z_c = -c2/3 ~ 0.30740131
+    // ------------------------------------------------------------------------
+    {
+        const double A = thermo::constants::OMEGA_A;
+        const double B = thermo::constants::OMEGA_B;
+        const double c2 = -(1.0 - B);
+        const double c1 = A - 3.0 * B * B - 2.0 * B;
+        const double c0 = -(A * B - B * B - B * B * B);
+        const auto sol = thermo::CubicSolver::solve(c2, c1, c0);
+
+        report_test("Test 9 (PR Critical Triple Root): 3 real roots", sol.num_real_roots == 3);
+        report_test("Test 9 (PR Critical Triple Root): Exactly 1 distinct root (multiplicity 3)",
+                    sol.num_distinct_roots == 1);
+        report_test("Test 9 (PR Critical Triple Root): Z_c ~ 0.30740131",
+                    approx_equal(sol.distinct_roots[0], 0.30740131, 1.0e-6));
+        report_test("Test 9 (PR Critical Triple Root): Residual <= 1e-12",
+                    sol.residuals[0] <= thermo::constants::CUBIC_POLY_RESIDUAL_TOL);
+    }
+
+    // ------------------------------------------------------------------------
+    // Test 10: Near-Critical State (T = 1.001*Tc, P = Pc)
+    // Testing numerical stability of Cardano solver near discriminant cusp.
+    // Physics note: near critical point, (Z - Z_c) ~ (Tr - 1)^(1/3) ~ (0.001)^(1/3) ~ 0.1,
+    // so a 0.1% temperature increase shifts Z from 0.3074 to 0.3638.
+    // ------------------------------------------------------------------------
+    {
+        const double Tr_near = 1.001;
+        const double A_near = thermo::constants::OMEGA_A / (Tr_near * Tr_near);
+        const double B_near = thermo::constants::OMEGA_B / Tr_near;
+        const double c2 = -(1.0 - B_near);
+        const double c1 = A_near - 3.0 * B_near * B_near - 2.0 * B_near;
+        const double c0 = -(A_near * B_near - B_near * B_near - B_near * B_near * B_near);
+        const auto sol = thermo::CubicSolver::solve(c2, c1, c0);
+
+        report_test("Test 10 (Near-Critical Coalescence): 1 real root (Delta > 0)", sol.num_real_roots == 1);
+        report_test("Test 10 (Near-Critical Coalescence): Root Z == 0.363838",
+                    approx_equal(sol.roots[0], 0.363838, 1.0e-4));
+        report_test("Test 10 (Near-Critical Coalescence): Residual <= 1e-12",
+                    sol.residuals[0] <= thermo::constants::CUBIC_POLY_RESIDUAL_TOL);
+    }
+
     std::cout << "==================================================\n";
     std::cout << "SUMMARY: Passed " << g_pass_count << ", Failed " << g_fail_count << "\n";
     std::cout << "==================================================\n";

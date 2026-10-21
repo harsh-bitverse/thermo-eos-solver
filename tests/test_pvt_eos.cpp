@@ -331,6 +331,35 @@ int main() {
         report_test("Test F: NaN v in calculate_pressure throws invalid_argument", threw);
     }
 
+    // ------------------------------------------------------------------------
+    // Test G: Critical Point Inflection & Supercritical Extreme Conditions
+    // ------------------------------------------------------------------------
+    std::cout << "\n--- Test G: Critical Point Inflection & Supercritical Extremes ---\n";
+    {
+        const auto ch4 = db.get_component("CH4");
+        const thermo::PengRobinsonEOS pr_ch4(ch4);
+
+        // Near-critical state: T = 1.0001*Tc, P = Pc
+        const double T_crit_near = 1.0001 * ch4.Tc;
+        const auto pvt_crit = pr_ch4.calculate_pvt(T_crit_near, ch4.Pc);
+        report_test("Test G: Near-critical Methane has 1 physical root", pvt_crit.roots.size() == 1);
+        report_test("Test G: Near-critical Methane Z ~ Z_c (~0.3074)",
+                    approx_equal(pvt_crit.roots[0].Z, 0.3074, 0.05));
+        report_test("Test G: Near-critical Methane is mechanically STABLE",
+                    pvt_crit.roots[0].stability == thermo::MechanicalStability::STABLE);
+
+        // Extreme supercritical high-pressure: 400 K, 100 MPa
+        const double T_super = 400.0;
+        const double P_super = 1.0e8; // 100 MPa
+        const auto pvt_super = pr_ch4.calculate_pvt(T_super, P_super);
+        report_test("Test G: Supercritical Methane (100 MPa) has 1 physical root", pvt_super.roots.size() == 1);
+        report_test("Test G: Supercritical Z > 1.0 at 100 MPa", pvt_super.roots[0].Z > 1.0);
+
+        const double P_calc = pr_ch4.calculate_pressure(T_super, pvt_super.roots[0].molar_volume);
+        report_test("Test G: Reciprocity at 100 MPa satisfies tolerance <= 1e-10",
+                    std::abs(P_calc - P_super) / P_super <= 1.0e-10);
+    }
+
     std::cout << "==================================================\n";
     std::cout << "SUMMARY: Passed " << g_pass_count << ", Failed " << g_fail_count << "\n";
     std::cout << "==================================================\n";

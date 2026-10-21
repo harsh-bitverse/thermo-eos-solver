@@ -430,6 +430,45 @@ int main() {
         TEST_ASSERT(threw_shomate_hi, "calculate_H_total rejects T > T_max (1300 K for Methane)");
     }
 
+    // ========================================================================
+    // Part G: Independent Differential Maxwell & Gibbs-Helmholtz Relations
+    // ========================================================================
+    std::cout << "\n--- Part G: Differential Maxwell & Gibbs-Helmholtz Relations ---\n";
+    {
+        const auto comp_ch4 = db.get_component("Methane");
+        const thermo::PengRobinsonEOS eos_ch4(comp_ch4);
+        const double T = 300.0;
+        const double P = 5.0e6;
+
+        const auto pvt = eos_ch4.calculate_pvt(T, P);
+        const double Z_base = pvt.roots[0].Z;
+        const double H_res_base = pvt.roots[0].H_res;
+
+        // 1. Gibbs-Helmholtz Relation:
+        // H^res = -R * T^2 * (d(ln_phi) / dT)_P
+        const double delta_T = 1.0e-4; // 0.1 mK step
+        const auto pvt_T_plus = eos_ch4.calculate_pvt(T + delta_T, P);
+        const auto pvt_T_minus = eos_ch4.calculate_pvt(T - delta_T, P);
+
+        const double d_ln_phi_dT = (pvt_T_plus.roots[0].ln_phi - pvt_T_minus.roots[0].ln_phi) / (2.0 * delta_T);
+        const double H_res_from_Gibbs = -thermo::constants::R * (T * T) * d_ln_phi_dT;
+
+        TEST_ASSERT(approx_rel_equal(H_res_base, H_res_from_Gibbs, 1.0e-6),
+                    "Gibbs-Helmholtz: H^res == -R*T^2*(d(ln_phi)/dT)_P relative error <= 1e-6");
+
+        // 2. Pressure Differential Relation:
+        // (d(ln_phi) / dP)_T = (Z - 1) / P
+        const double delta_P = 1.0; // 1 Pa step at 5 MPa
+        const auto pvt_P_plus = eos_ch4.calculate_pvt(T, P + delta_P);
+        const auto pvt_P_minus = eos_ch4.calculate_pvt(T, P - delta_P);
+
+        const double d_ln_phi_dP = (pvt_P_plus.roots[0].ln_phi - pvt_P_minus.roots[0].ln_phi) / (2.0 * delta_P);
+        const double expected_d_ln_phi_dP = (Z_base - 1.0) / P;
+
+        TEST_ASSERT(approx_rel_equal(d_ln_phi_dP, expected_d_ln_phi_dP, 1.0e-6),
+                    "Maxwell: (d(ln_phi)/dP)_T == (Z - 1)/P relative error <= 1e-6");
+    }
+
     std::cout << "\n========================================================\n";
     std::cout << "SUMMARY: Passed " << passed_assertions << " / " << total_assertions << " assertions.\n";
     std::cout << "========================================================\n";
