@@ -186,7 +186,7 @@ Automated testing was conducted via CTest and `test_pvt_eos.exe`:
 
 ## 8. Git Commit Record
 
-* **Commit Hash:** Pending final Session 3 commit.
+* **Commit Hash:** `8b710d1`
 * **Files Tracked:**
   * `include/thermo/StateProperties.hpp`
   * `include/thermo/PengRobinsonEOS.hpp`
