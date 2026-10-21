@@ -17,6 +17,7 @@ add_library(thermo_core
     src/Component.cpp
     src/ComponentDatabase.cpp
     src/CubicSolver.cpp
+    src/PengRobinsonEOS.cpp
 )
 
 target_include_directories(thermo_core PUBLIC

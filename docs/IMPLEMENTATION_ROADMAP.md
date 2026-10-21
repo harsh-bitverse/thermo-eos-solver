@@ -158,10 +158,10 @@ gantt
 
 | Phase / Session | Objective | Key Deliverables | Pre-requisites | Measurable Completion Criteria |
 | :--- | :--- | :--- | :--- | :--- |
-| **Session 1** | Specification, Foundations & Architecture | `PROJECT_SPECIFICATION.md`, `IMPLEMENTATION_ROADMAP.md`, `.gitignore`, git init | Course Prompt | Approved engineering specification; zero unverified equations. |
-| **Session 1.5** | Independent Thermodynamic Audit | `SESSION_1_5_AUDIT.md`, numerical benchmarks recalculated | Session 1 | Discrepancies resolved; NIST Shomate parameters verified; gate approved. |
-| **Session 2** (Current) | Core Data Types & Cubic Solver | `Constants.hpp`, `Component.hpp/cpp`, `ComponentDatabase.hpp/cpp`, `CubicSolver.hpp/cpp`, tests | Session 1.5 | All unit tests pass; solves cubics with residual $\le 10^{-12}$; 8 gases verified. |
-| **Session 3** | PR EOS Engine & PVT Calculations | `PengRobinsonEOS.hpp/cpp` (PVT forward/inverse), root admissibility filter ($Z > B$) | Session 2 | $P(T, v(T, P)) == P$ within machine precision; mechanical stability verified. |
+| **Session 1** | Specification, Foundations & Architecture | `PROJECT_SPECIFICATION.md`, `IMPLEMENTATION_ROADMAP.md`, `.gitignore`, git init | Course Prompt | Approved engineering specification; zero unverified equations. (Done) |
+| **Session 1.5** | Independent Thermodynamic Audit | `SESSION_1_5_AUDIT.md`, numerical benchmarks recalculated | Session 1 | Discrepancies resolved; NIST Shomate parameters verified; gate approved. (Done) |
+| **Session 2** | Core Data Types & Cubic Solver | `Constants.hpp`, `Component.hpp/cpp`, `ComponentDatabase.hpp/cpp`, `CubicSolver.hpp/cpp`, tests | Session 1.5 | All unit tests pass (83/83); solves cubics with residual $\le 10^{-12}$; 8 gases verified. (Done) |
+| **Session 3** (Completed) | PR EOS Engine & PVT Calculations | `PengRobinsonEOS.hpp/cpp` (PVT forward/inverse), `StateProperties.hpp`, `test_pvt_eos.cpp` | Session 2 | 100% tests pass (113/113 assertions); $P(T, v) == P$ reciprocity $\le 10^{-10}$; mechanical stability verified. (Done) |
 | **Session 4** | Departure Functions & Fugacity | $H^{\text{res}}, S^{\text{res}}, \phi, f$, small-$B$ Taylor regularization, Shomate $C_p$ integrals | Session 3 | $\lim_{P\to 0}\phi = 1.0, H^{\text{res}} \to 0$; Maxwell identity error $\le 10^{-15}$. |
 | **Session 5** | Test Suite & Literature Validation | Complete test suite in `tests/`, benchmark validation tables | Session 4 | 100% test pass rate across unit tests and audited benchmark cases. |
 | **Session 6** | CLI & Usability Polish | Interactive command-line interface with formatted outputs, input guardrails | Session 5 | Robust user workflow, handles invalid input gracefully, viva ready. |
